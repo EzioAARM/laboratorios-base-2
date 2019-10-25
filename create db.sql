@@ -1,4 +1,6 @@
-DROP DATABASE IF EXISTS ABCareolinea;
+USE master;
+GO
+DROP DATABASE ABCaerolinea;
 GO
 CREATE DATABASE ABCaerolinea 
 GO
@@ -102,11 +104,11 @@ CREATE TABLE Vuelo(
 	origen INT NOT NULL,
 	destino INT NOT NULL,
 	CONSTRAINT fk_origen_aeropuerto FOREIGN KEY (origen) REFERENCES Aeropuertos(id_aeropuerto)
-	ON DELETE CASCADE
-	ON UPDATE CASCADE,
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION,
 	CONSTRAINT fk_destino_aeropuerto FOREIGN KEY (destino) REFERENCES Aeropuertos(id_aeropuerto)
-	ON DELETE CASCADE
-	ON UPDATE CASCADE
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION
 )
 
 /*
@@ -129,11 +131,11 @@ CREATE TABLE Escala(
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
 	CONSTRAINT fk_escala_origen FOREIGN KEY (origen) REFERENCES Aeropuertos(id_aeropuerto)
-	ON DELETE CASCADE
-	ON UPDATE CASCADE,
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION,
 	CONSTRAINT fk_escala_destino FOREIGN KEY (destino) REFERENCES Aeropuertos(id_aeropuerto)
-	ON DELETE CASCADE
-	ON UPDATE CASCADE,
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION,
 	CONSTRAINT fk_escala_trabajador FOREIGN KEY (id_piloto) REFERENCES Trabajador(codigo_trabajador)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE
@@ -171,6 +173,23 @@ CREATE TABLE Clase(
 )
 
 /*
+	Registro de la informacion de los asientos disponibles por avion
+*/
+CREATE TABLE Asientos(
+	id_asiento INT NOT NULL PRIMARY KEY IDENTITY(1, 1),
+	numero_asiento VARCHAR(10) NOT NULL,
+	id_avion INT NOT NULL, 
+	id_clase INT NOT NULL,
+	informacion_extra VARCHAR(MAX),
+	CONSTRAINT fk_asientos_clase FOREIGN KEY (id_clase) REFERENCES Clase(id_clase)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE,
+	CONSTRAINT fk_asientos_avion FOREIGN KEY (id_avion) REFERENCES Avion(id_avion)
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION
+)
+
+/*
 	Luego de confirmar se emite el boleto (inserta en esta tabla)
 */
 CREATE TABLE Boletos(
@@ -179,7 +198,7 @@ CREATE TABLE Boletos(
 	id_cliente INT NOT NULL,
 	id_escala INT NOT NULL,
 	id_clase INT NOT NULL,
-	numero_asiento INT NOT NULL,
+	id_asiento INT NOT NULL,
 
 	CONSTRAINT fk_boletos_avion FOREIGN KEY (id_avion) REFERENCES Avion(id_avion)
 	ON DELETE CASCADE
@@ -188,11 +207,14 @@ CREATE TABLE Boletos(
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
 	CONSTRAINT fk_boletos_escala FOREIGN KEY (id_escala) REFERENCES Escala(id_escala)
-	ON DELETE CASCADE
-	ON UPDATE CASCADE,
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION,
 	CONSTRAINT fk_boletos_clase FOREIGN KEY (id_clase) REFERENCES Clase(id_clase)
-	ON DELETE CASCADE
-	ON UPDATE CASCADE
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION,
+	CONSTRAINT fk_boletos_asiento FOREIGN KEY (id_asiento) REFERENCES Asientos(id_asiento)
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION
 )
 
 /*
@@ -218,23 +240,23 @@ CREATE TABLE Reservas(
 	precio DECIMAL,
 	descuento DECIMAL,
 	plataforma INT NOT NULL,
-	id_asiento VARCHAR(10) NOT NULL,
+	id_asiento INT NOT NULL,
 
 	CONSTRAINT fk_reserva_clase FOREIGN KEY (id_clase) REFERENCES Clase(id_clase)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
 	CONSTRAINT fk_reserva_avion FOREIGN KEY (id_avion) REFERENCES Avion(id_avion)
-	ON DELETE CASCADE
-	ON UPDATE CASCADE,
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION,
 	CONSTRAINT fk_reserva_vuelo FOREIGN KEY (id_vuelo) REFERENCES Vuelo(id_vuelo)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
 	CONSTRAINT fk_reserva_plataforma FOREIGN KEY (plataforma) REFERENCES Plataforma(id_plataforma)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
-	CONSTRAINT fk_reserva_asiento FOREIGN KEY (Asientos) REFERENCES Asientos(id_asiento)
-	ON DELETE CASCADE
-	ON UPDATE CASCADE
+	CONSTRAINT fk_reserva_asiento FOREIGN KEY (id_asiento) REFERENCES Asientos(id_asiento)
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION
 )
 
 /*
@@ -251,18 +273,4 @@ CREATE TABLE HistorialReservas(
 	descuento DECIMAL,
 	plataforma INT NOT NULL,
 	id_asiento VARCHAR(10) NOT NULL
-)
-
-/*
-	Registro de la informacion de los asientos disponibles por avion
-*/
-CREATE TABLE Asientos(
-	id_asiento VARCHAR(10) NOT NULL,
-	id_avion INT NOT NULL, 
-	id_clase INT NOT NULL,
-	informacion_extra VARCHAR(MAX),
-	CONSTRAINT fk_asientos_clase FOREIGN KEY (id_avion, id_clase) REFERENCES Clase(id_clase, id_avion)
-	ON DELETE CASCADE
-	ON UPDATE CASCADE,
-	CONSTRAINT pk_asientos PRIMARY KEY (id_asiento, id_avion, id_clase)
 )
