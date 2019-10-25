@@ -112,8 +112,27 @@ AS
 BEGIN
 	BEGIN TRANSACTION;
 	BEGIN TRY
-		UPDATE Reservas SET estado = 'cancelado' WHERE id_reserva = @reserva;
-		UPDATE Reservas SET estado = 'disponible' WHERE id_reserva = @reserva;
+		DECLARE @fechaActual AS DATETIME
+		DECLARE @fechaVence AS DATETIME
+		SELECT @fechaActual = GETDATE(), @fechaVence = fecha_vencimiento FROM Reservas WHERE id_reserva = @reserva;
+		IF (@fechaActual >= @fechaVence)
+		BEGIN
+			UPDATE Reservas SET estado = 'cancelado' WHERE id_reserva = @reserva;
+			UPDATE Reservas SET estado = 'disponible' WHERE id_reserva = @reserva;
+			DECLARE @vueloReserva AS INT
+			DECLARE @asientoReserva AS INT
+			SELECT @vueloReserva = id_vuelo, @asientoReserva = id_asiento FROM Reservas WHERE id_reserva = @reserva
+			DECLARE @personasCola AS INT
+			SELECT @personasCola = COUNT(1) FROM ColaReservas WHERE id_vuelo = @vueloReserva AND id_asiento = @asientoReserva
+			IF @personasCola > 0 
+			BEGIN
+				DECLARE @personaCola AS INTEGER
+				SELECT TOP 1 @personaCola = id_cola FROM ColaReservas WHERE id_vuelo = @vueloReserva AND id_asiento = @asientoReserva
+				ORDER BY fecha_modificacion ASC
+				UPDATE Reservas SET estado = 'reservado' WHERE id_vuelo = @vueloReserva AND id_asiento = @asientoReserva
+				DELETE FROM ColaReservas WHERE id_cola = @personaCola
+			END
+		END
 		COMMIT TRANSACTION;
 	END TRY
 	BEGIN CATCH
