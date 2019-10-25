@@ -1,165 +1,157 @@
-Create database ABCaerolinea 
-go
+CREATE DATABASE ABCaerolinea 
+GO
 
-use ABCaerolinea
-go
+USE ABCaerolinea
+GO
 
-create table Persona (
-	Identificacion int primary key, 
-	Nombres varchar(50), 
-	Apellidos varchar(50), 
-	Nacionalidad varchar(50), 
-	Fecha_Nacimiento date
+CREATE TABLE Persona (
+	Identificacion INT PRIMARY KEY, 
+	Nombres VARCHAR(50), 
+	Apellidos VARCHAR(50), 
+	Nacionalidad VARCHAR(50), 
+	Fecha_Nacimiento DATE
 )
 
-create table Cliente (
-	id_cliente int primary key,
-	id_persona int not null, 
-	informacion_Relevante varchar(250),
-
-	Constraint fk_Cliente_Persona foreign key (id_persona) references Persona(Identificacion)
-
+CREATE TABLE Cliente (
+	id_cliente INT PRIMARY KEY,
+	id_persona INT NOT NULL, 
+	informacion_Relevante VARCHAR(250),
+	CONSTRAINT fk_Cliente_Persona FOREIGN KEY (id_persona) REFERENCES Persona(Identificacion)
 )
 
-create table Trabajador (
-	codigo_trabajador int primary key, 
-	id_persona int not null,
-	Salario_A decimal not null,
-	activo bit,
-	fecha_contratacion datetime,
-
-	Constraint fk_Trabajador_Persona foreign key (id_persona) references Persona(Identificacion)
+CREATE TABLE Trabajador (
+	codigo_trabajador INT PRIMARY KEY, 
+	id_persona INT NOT NULL,
+	Salario_A decimal NOT NULL,
+	activo BIT,
+	fecha_contratacion DATETIME,
+	CONSTRAINT fk_Trabajador_Persona FOREIGN KEY (id_persona) REFERENCES Persona(Identificacion)
 )
 
-create table Salarios(
-	codigo_trabajador int not null,
-	salario decimal not null,
-	Fecha_pago datetime not null
-
-	Constraint Pk_cTrabajador_Salario primary key (codigo_trabajador, Fecha_pago)
+CREATE TABLE Salarios(
+	codigo_trabajador INT NOT NULL,
+	salario DECIMAL NOT NULL,
+	Fecha_pago DATETIME NOT NULL,
+	CONSTRAINT Pk_cTrabajador_Salario PRIMARY KEY (codigo_trabajador, Fecha_pago)
 )
 
-create table Avion (
-	id_avion int primary key,
-	Cantidad_maxima int not null,
-	Tipo_Avion varchar(50)
+CREATE TABLE Avion (
+	id_avion INT PRIMARY KEY,
+	Cantidad_maxima INT NOT NULL,
+	Tipo_Avion VARCHAR(50)
 )
 
-create table Pais(
-	id_pais int primary key identity (1,1),
-	Nombre varchar(100) not null
+CREATE TABLE Pais(
+	id_pais INT PRIMARY KEY IDENTITY (1,1),
+	Nombre VARCHAR(100) NOT NULL
 )
 
-create table Ciudad(
-	id_ciudad int primary key,
-	id_pais int not null,
-	nombre varchar(100),
-
-	Constraint fk_ciudad_pais foreign key (id_pais) references Pais(id_pais)
+CREATE TABLE Ciudad(
+	id_ciudad INT PRIMARY KEY,
+	id_pais INT NOT NULL,
+	nombre VARCHAR(100),
+	CONSTRAINT fk_ciudad_pais FOREIGN KEY (id_pais) REFERENCES Pais(id_pais)
 )
 
-create table Aeropuertos (
-	id_aeropuerto int primary key,
-	id_ciudad int not null,
-	nombre varchar(100),
-
-	Constraint fk_Aeropuerto_Ciudad foreign key (id_ciudad) references Ciudad(id_ciudad)
+CREATE TABLE Aeropuertos (
+	id_aeropuerto INT PRIMARY KEY,
+	id_ciudad INT NOT NULL,
+	nombre VARCHAR(100),
+	CONSTRAINT fk_Aeropuerto_Ciudad FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad)
 )
 
-create table Vuelo(
-	id_vuelo int primary key identity(1, 1),
-	origen int not null,
-	destino int not null,
-
-	Constraint fk_origen_aeropuerto foreign key (origen) references Aeropuertos(id_aeropuerto),
-	Constraint fk_destino_aeropuerto foreign key (destino) references Aeropuertos(id_aeropuerto)
+CREATE TABLE Vuelo(
+	id_vuelo INT PRIMARY KEY IDENTITY(1, 1),
+	origen INT NOT NULL,
+	destino INT NOT NULL,
+	CONSTRAINT fk_origen_aeropuerto FOREIGN KEY (origen) REFERENCES Aeropuertos(id_aeropuerto),
+	CONSTRAINT fk_destino_aeropuerto FOREIGN KEY (destino) REFERENCES Aeropuertos(id_aeropuerto)
 )
 
-create table Escala(
-	id_escala int primary key identity(1, 1),
-	id_vuelo int not null,
-	id_avion int not null,
-	origen int not null,
-	destino int not null,
-	id_piloto int not null,
-	fecha_inicio datetime not null,
-	fecha_fin datetime not null,
-
-	Constraint fk_escala_vuelo foreign key (id_vuelo) references Vuelo(id_vuelo),
-	Constraint fk_escala_avion foreign key (id_avion) references Avion(id_avion),
-	Constraint fk_escala_origen foreign key (origen) references Aeropuertos(id_aeropuerto),
-	Constraint fk_escala_destino foreign key (destino) references Aeropuertos(id_aeropuerto),
-	Constraint fk_escala_trabajador foreign key (id_piloto) references Trabajador(codigo_trabajador)
+CREATE TABLE Escala(
+	id_escala INT PRIMARY KEY IDENTITY(1, 1),
+	id_vuelo INT NOT NULL,
+	id_avion INT NOT NULL,
+	origen INT NOT NULL,
+	destino INT NOT NULL,
+	id_piloto INT NOT NULL,
+	fecha_inicio DATETIME NOT NULL,
+	fecha_fin DATETIME NOT NULL,
+	CONSTRAINT fk_escala_vuelo FOREIGN KEY (id_vuelo) REFERENCES Vuelo(id_vuelo),
+	CONSTRAINT fk_escala_avion FOREIGN KEY (id_avion) REFERENCES Avion(id_avion),
+	CONSTRAINT fk_escala_origen FOREIGN KEY (origen) REFERENCES Aeropuertos(id_aeropuerto),
+	CONSTRAINT fk_escala_destino FOREIGN KEY (destino) REFERENCES Aeropuertos(id_aeropuerto),
+	CONSTRAINT fk_escala_trabajador FOREIGN KEY (id_piloto) REFERENCES Trabajador(codigo_trabajador)
 )
 
-create table Tripulacion (
-	codigo_trabajador int not null,
-	id_vuelo int not null,
+CREATE TABLE Tripulacion (
+	codigo_trabajador INT NOT NULL,
+	id_vuelo INT NOT NULL,
 
-	Constraint fk_tripulacion_trabajador foreign key (codigo_trabajador) references Trabajador(codigo_trabajador),
-	Constraint fk_tripulacion_vuelo foreign key (id_vuelo) references Vuelo(id_vuelo),
-	Constraint pk_tripulacion primary key (codigo_trabajador, id_vuelo)
+	CONSTRAINT fk_tripulacion_trabajador FOREIGN KEY (codigo_trabajador) REFERENCES Trabajador(codigo_trabajador),
+	CONSTRAINT fk_tripulacion_vuelo FOREIGN KEY (id_vuelo) REFERENCES Vuelo(id_vuelo),
+	CONSTRAINT pk_tripulacion PRIMARY KEY (codigo_trabajador, id_vuelo)
 )
 
-create table Clase(
-	id_clase int primary key identity(1,5),
-	id_avion int not null,
-	tipo varchar(50) not null,
-	cantidad_pasajeros int not null,
+CREATE TABLE Clase(
+	id_clase INT PRIMARY KEY IDENTITY(1,5),
+	id_avion INT NOT NULL,
+	tipo VARCHAR(50) NOT NULL,
+	cantidad_pasajeros INT NOT NULL,
 
-	Constraint fk_clase_avion foreign key (id_avion) references Avion(id_avion),
-	Constraint ck_tipoclase check (tipo = 'Primera' or tipo = 'Economica' or tipo = 'Ejecutiva' )
+	CONSTRAINT fk_clase_avion FOREIGN KEY(id_avion) REFERENCES Avion(id_avion),
+	CONSTRAINT ck_tipoclase CHECK (tipo = 'Primera' OR tipo = 'Economica' OR tipo = 'Ejecutiva' )
 )
 
-create table HistorialCostoClase (
-	id_avion int not null,
-	id_clase int not null,
-	fecha_inicio datetime not null,
-	fecha_final datetime,
-	costo decimal not null
+CREATE TABLE HistorialCostoClase (
+	id_avion INT NOT NULL,
+	id_clase INT NOT NULL,
+	fecha_inicio DATETIME NOT NULL,
+	fecha_final DATETIME,
+	costo DECIMAL NOT NULL
 )
 
-create table Boletos(
-	numero_boleto int primary key identity(1,1),
-	id_avion int not null,
-	id_cliente int not null,
-	id_escala int not null,
-	id_clase int not null,
-	numero_asiento int not null,
+CREATE TABLE Boletos(
+	numero_boleto INT PRIMARY KEY IDENTITY(1,1),
+	id_avion INT NOT NULL,
+	id_cliente INT NOT NULL,
+	id_escala INT NOT NULL,
+	id_clase INT NOT NULL,
+	numero_asiento INT NOT NULL,
 
-	Constraint fk_boletos_avion foreign key (id_avion) references Avion(id_avion),
-	Constraint fk_boletos_cliente foreign key (id_cliente) references Cliente(id_cliente),
-	Constraint fk_boletos_escala foreign key (id_escala) references Escala(id_escala),
-	Constraint fk_boletos_clase foreign key (id_clase) references Clase(id_clase)
+	CONSTRAINT fk_boletos_avion FOREIGN KEY (id_avion) REFERENCES Avion(id_avion),
+	CONSTRAINT fk_boletos_cliente FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente),
+	CONSTRAINT fk_boletos_escala FOREIGN KEY (id_escala) REFERENCES Escala(id_escala),
+	CONSTRAINT fk_boletos_clase FOREIGN KEY (id_clase) REFERENCES Clase(id_clase)
 )
 
-create table Plataforma(
-	id_plataforma int primary key,
-	nombre varchar(50) not null
+CREATE TABLE Plataforma(
+	id_plataforma INT PRIMARY KEY,
+	nombre VARCHAR(50) NOT NULL
 )
 
-create table Reservas(
-	id_reserva int primary key identity(1, 1),
-	num_registro int not null,
-	id_vuelo int not null,
+CREATE TABLE Reservas(
+	id_reserva INT PRIMARY KEY IDENTITY(1, 1),
+	num_registro INT NOT NULL,
+	id_vuelo INT NOT NULL,
 	estado varchar(50) not null,
-	id_clase int not null,
-	id_avion int not null,
-	precio decimal,
-	descuento decimal,
-	plataforma int not null,
+	id_clase INT NOT NULL,
+	id_avion INT NOT NULL,
+	precio DECIMAL,
+	descuento DECIMAL,
+	plataforma INT NOT NULL,
 
-	Constraint fk_reserva_clase foreign key (id_clase) references Clase(id_clase),
-	Constraint fk_reserva_avion foreign key (id_avion) references Avion(id_avion),
-	Constraint fk_reserva_vuelo foreign key (id_vuelo) references Vuelo(id_vuelo),
-	Constraint fk_reserva_plataforma foreign key (plataforma) references Plataforma(id_plataforma)
+	CONSTRAINT fk_reserva_clase FOREIGN KEY (id_clase) REFERENCES Clase(id_clase),
+	CONSTRAINT fk_reserva_avion FOREIGN KEY (id_avion) REFERENCES Avion(id_avion),
+	CONSTRAINT fk_reserva_vuelo FOREIGN KEY (id_vuelo) REFERENCES Vuelo(id_vuelo),
+	CONSTRAINT fk_reserva_plataforma FOREIGN KEY (plataforma) REFERENCES Plataforma(id_plataforma)
 )
 
-create table HistorialReservas(
-	id_reserva int primary key identity(1, 1),
-	id_vuelo int not null,
-	estado varchar(50) not null,
-	num_registro int not null,
-	fecha_transaccion datetime default getdate()
+CREATE TABLE HistorialReservas(
+	id_reserva INT PRIMARY KEY IDENTITY(1, 1),
+	id_vuelo INT NOT NULL,
+	estado VARCHAR(50) NOT NULL,
+	num_registro INT NOT NULL,
+	fecha_transaccion DATETIME default GETDATE()
 )
 
