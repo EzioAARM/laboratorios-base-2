@@ -290,7 +290,7 @@ CREATE TABLE ColaReservas(
 	Tabla para el historial de las reservas, cancelaciones y personas en cola
 */
 CREATE TABLE HistorialReservas(
-	id_reserva INT PRIMARY KEY,
+	id_reserva INT,
 	id_vuelo INT NOT NULL,
 	estado varchar(50) not null,
 	id_clase INT NOT NULL,
@@ -300,7 +300,8 @@ CREATE TABLE HistorialReservas(
 	plataforma INT NOT NULL,
 	id_asiento VARCHAR(10) NOT NULL,
 	fecha_transaccion DATETIME DEFAULT GETDATE(),
-	fecha_modificacion DATETIME DEFAULT GETDATE()
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
+	CONSTRAINT pk_historialReservas PRIMARY KEY (id_reserva, fecha_modificacion)
 )
 /*
 	Creacion de triggers
@@ -335,7 +336,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Cliente SET fecha_modificacion = GETDATE() 
-	FROM Cliente INNER JOIN inserted i ON Cliente.Identificacion = i.Identificacion;
+	FROM Cliente INNER JOIN inserted i ON Cliente.id_cliente = i.id_cliente;
 END
 
 GO
@@ -346,7 +347,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Trabajador SET fecha_modificacion = GETDATE() 
-	FROM Trabajador INNER JOIN inserted i ON Trabajador.Identificacion = i.Identificacion;
+	FROM Trabajador INNER JOIN inserted i ON Trabajador.codigo_trabajador = i.codigo_trabajador;
 END
 
 GO
@@ -357,7 +358,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Salarios SET fecha_modificacion = GETDATE() 
-	FROM Salarios INNER JOIN inserted i ON Salarios.Identificacion = i.Identificacion;
+	FROM Salarios INNER JOIN inserted i ON Salarios.codigo_trabajador = i.codigo_trabajador AND Salarios.fecha_pago = i.fecha_pago;
 END
 
 GO
@@ -368,7 +369,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Avion SET fecha_modificacion = GETDATE() 
-	FROM Avion INNER JOIN inserted i ON Avion.Identificacion = i.Identificacion;
+	FROM Avion INNER JOIN inserted i ON Avion.id_avion = i.id_avion;
 END
 
 GO
@@ -379,7 +380,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Pais SET fecha_modificacion = GETDATE() 
-	FROM Pais INNER JOIN inserted i ON Pais.Identificacion = i.Identificacion;
+	FROM Pais INNER JOIN inserted i ON Pais.id_pais = i.id_pais;
 END
 
 GO
@@ -390,7 +391,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Ciudad SET fecha_modificacion = GETDATE() 
-	FROM Ciudad INNER JOIN inserted i ON Ciudad.Identificacion = i.Identificacion;
+	FROM Ciudad INNER JOIN inserted i ON Ciudad.id_ciudad = i.id_ciudad;
 END
 
 GO
@@ -401,7 +402,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Aeropuertos SET fecha_modificacion = GETDATE() 
-	FROM Aeropuertos INNER JOIN inserted i ON Aeropuertos.Identificacion = i.Identificacion;
+	FROM Aeropuertos INNER JOIN inserted i ON Aeropuertos.id_aeropuerto = i.id_aeropuerto;
 END
 
 GO
@@ -412,7 +413,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Vuelo SET fecha_modificacion = GETDATE() 
-	FROM Vuelo INNER JOIN inserted i ON Vuelo.Identificacion = i.Identificacion;
+	FROM Vuelo INNER JOIN inserted i ON Vuelo.id_vuelo = i.id_vuelo;
 END
 
 GO
@@ -423,7 +424,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Escala SET fecha_modificacion = GETDATE() 
-	FROM Escala INNER JOIN inserted i ON Escala.Identificacion = i.Identificacion;
+	FROM Escala INNER JOIN inserted i ON Escala.id_escala = i.id_escala;
 END
 
 GO
@@ -434,7 +435,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Tripulacion SET fecha_modificacion = GETDATE() 
-	FROM Tripulacion INNER JOIN inserted i ON Tripulacion.Identificacion = i.Identificacion;
+	FROM Tripulacion INNER JOIN inserted i ON Tripulacion.codigo_trabajador = i.codigo_trabajador;
 END
 
 GO
@@ -445,7 +446,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Clase SET fecha_modificacion = GETDATE() 
-	FROM Clase INNER JOIN inserted i ON Clase.Identificacion = i.Identificacion;
+	FROM Clase INNER JOIN inserted i ON Clase.id_clase = i.id_clase;
 END
 
 GO
@@ -456,7 +457,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Asientos SET fecha_modificacion = GETDATE() 
-	FROM Asientos INNER JOIN inserted i ON Asientos.Identificacion = i.Identificacion;
+	FROM Asientos INNER JOIN inserted i ON Asientos.id_asiento = i.id_asiento;
 END
 
 GO
@@ -467,7 +468,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Boletos SET fecha_modificacion = GETDATE() 
-	FROM Boletos INNER JOIN inserted i ON Boletos.Identificacion = i.Identificacion;
+	FROM Boletos INNER JOIN inserted i ON Boletos.numero_boleto = i.numero_boleto;
 END
 
 GO
@@ -478,7 +479,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Plataforma SET fecha_modificacion = GETDATE() 
-	FROM Plataforma INNER JOIN inserted i ON Plataforma.Identificacion = i.Identificacion;
+	FROM Plataforma INNER JOIN inserted i ON Plataforma.id_plataforma = i.id_plataforma;
 END
 
 GO
@@ -489,7 +490,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE Reservas SET fecha_modificacion = GETDATE() 
-	FROM Reservas INNER JOIN inserted i ON Reservas.Identificacion = i.Identificacion;
+	FROM Reservas INNER JOIN inserted i ON Reservas.id_reserva = i.id_reserva;
 END
 
 GO
@@ -500,7 +501,7 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE ColaReservas SET fecha_modificacion = GETDATE() 
-	FROM ColaReservas INNER JOIN inserted i ON ColaReservas.Identificacion = i.Identificacion;
+	FROM ColaReservas INNER JOIN inserted i ON ColaReservas.id_cola = i.id_cola;
 END
 
 GO
@@ -511,5 +512,5 @@ AFTER UPDATE
 AS
 BEGIN
 	UPDATE HistorialReservas SET fecha_modificacion = GETDATE() 
-	FROM HistorialReservas INNER JOIN inserted i ON HistorialReservas.Identificacion = i.Identificacion;
+	FROM HistorialReservas INNER JOIN inserted i ON HistorialReservas.id_reserva = i.id_reserva;
 END
