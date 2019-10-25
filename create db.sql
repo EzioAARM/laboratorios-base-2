@@ -206,7 +206,7 @@ CREATE TABLE Asientos(
 	Luego de confirmar se emite el boleto (inserta en esta tabla)
 */
 CREATE TABLE Boletos(
-	numero_boleto INT PRIMARY KEY IDENTITY(1,1),
+	numero_boleto INT,
 	id_avion INT NOT NULL,
 	id_cliente INT NOT NULL,
 	id_escala INT NOT NULL,
@@ -227,7 +227,8 @@ CREATE TABLE Boletos(
 	ON UPDATE NO ACTION,
 	CONSTRAINT fk_boletos_asiento FOREIGN KEY (id_asiento) REFERENCES Asientos(id_asiento)
 	ON DELETE NO ACTION
-	ON UPDATE NO ACTION
+	ON UPDATE NO ACTION,
+	CONSTRAINT pk_boletos PRIMARY KEY (numero_boleto, id_escala)
 )
 
 /*
@@ -301,3 +302,214 @@ CREATE TABLE HistorialReservas(
 	fecha_transaccion DATETIME DEFAULT GETDATE(),
 	fecha_modificacion DATETIME DEFAULT GETDATE()
 )
+/*
+	Creacion de triggers
+*/
+GO
+-- Trigger para agregar automaticamente cada modificacion que se haga en las reservas y poder llevar un historial completo
+CREATE OR ALTER TRIGGER agregarHistorial
+ON Reservas
+AFTER INSERT, UPDATE 
+AS
+BEGIN
+    INSERT INTO HistorialReservas 
+	SELECT * FROM inserted;
+END
+
+GO
+-- Triggers para actualizar la fecha de modificacion de los registros en cada tabla
+CREATE OR ALTER TRIGGER fechaModificacionPersona
+ON Persona
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Persona SET fecha_modificacion = GETDATE() 
+	FROM Persona INNER JOIN inserted i ON Persona.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionCliente
+ON Cliente
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Cliente SET fecha_modificacion = GETDATE() 
+	FROM Cliente INNER JOIN inserted i ON Cliente.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionTrabajador
+ON Trabajador
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Trabajador SET fecha_modificacion = GETDATE() 
+	FROM Trabajador INNER JOIN inserted i ON Trabajador.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionSalarios
+ON Salarios
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Salarios SET fecha_modificacion = GETDATE() 
+	FROM Salarios INNER JOIN inserted i ON Salarios.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionAvion
+ON Avion
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Avion SET fecha_modificacion = GETDATE() 
+	FROM Avion INNER JOIN inserted i ON Avion.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionPais
+ON Pais
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Pais SET fecha_modificacion = GETDATE() 
+	FROM Pais INNER JOIN inserted i ON Pais.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionCiudad
+ON Ciudad
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Ciudad SET fecha_modificacion = GETDATE() 
+	FROM Ciudad INNER JOIN inserted i ON Ciudad.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionAeropuertos
+ON Aeropuertos
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Aeropuertos SET fecha_modificacion = GETDATE() 
+	FROM Aeropuertos INNER JOIN inserted i ON Aeropuertos.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionVuelo
+ON Vuelo
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Vuelo SET fecha_modificacion = GETDATE() 
+	FROM Vuelo INNER JOIN inserted i ON Vuelo.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionEscala
+ON Escala
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Escala SET fecha_modificacion = GETDATE() 
+	FROM Escala INNER JOIN inserted i ON Escala.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionTripulacion
+ON Tripulacion
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Tripulacion SET fecha_modificacion = GETDATE() 
+	FROM Tripulacion INNER JOIN inserted i ON Tripulacion.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionClase
+ON Clase
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Clase SET fecha_modificacion = GETDATE() 
+	FROM Clase INNER JOIN inserted i ON Clase.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionAsientos
+ON Asientos
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Asientos SET fecha_modificacion = GETDATE() 
+	FROM Asientos INNER JOIN inserted i ON Asientos.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionBoletos
+ON Boletos
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Boletos SET fecha_modificacion = GETDATE() 
+	FROM Boletos INNER JOIN inserted i ON Boletos.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionPlataforma
+ON Plataforma
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Plataforma SET fecha_modificacion = GETDATE() 
+	FROM Plataforma INNER JOIN inserted i ON Plataforma.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionReservas
+ON Reservas
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE Reservas SET fecha_modificacion = GETDATE() 
+	FROM Reservas INNER JOIN inserted i ON Reservas.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionColaReservas
+ON ColaReservas
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE ColaReservas SET fecha_modificacion = GETDATE() 
+	FROM ColaReservas INNER JOIN inserted i ON ColaReservas.Identificacion = i.Identificacion;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER fechaModificacionHistorialReservas
+ON HistorialReservas
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE HistorialReservas SET fecha_modificacion = GETDATE() 
+	FROM HistorialReservas INNER JOIN inserted i ON HistorialReservas.Identificacion = i.Identificacion;
+END

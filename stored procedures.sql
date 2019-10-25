@@ -1,14 +1,3 @@
-CREATE OR ALTER TRIGGER agregarHistorial
-ON Reservas
-AFTER INSERT, UPDATE 
-AS
-BEGIN
-    INSERT INTO HistorialReservas 
-	SELECT * FROM inserted;
-END
-
-GO
-
 CREATE OR ALTER PROCEDURE USP_reservarAsiento(@vuelo AS INT, @plataforma AS INT, @tiempoReserva AS INT, @asientoE1 AS INT, @asientoE2 AS INT = NULL, @asientoE3 AS INT = NULL)
 AS
 BEGIN
@@ -90,4 +79,43 @@ BEGIN
 			ROLLBACK TRANSACTION;
 			THROW 5400, 'El primer asiento no corresponde a una escala del vuelo que se desea', -1;
 		END
+END
+
+GO
+
+CREATE OR ALTER PROCEDURE USP_confirmarReserva(@reserva AS INT, @cliente AS INT)
+AS
+BEGIN
+	BEGIN TRANSACTION;
+	BEGIN TRY
+		DECLARE @avion AS INT
+		DECLARE @clase AS INT
+		DECLARE @vuelo AS INT
+		DECLARE @boleto AS INT
+		SELECT TOP 1 @avion = id_avion, @clase = id_clase, @vuelo = id_vuelo FROM Reservas WHERE id_reserva = @reserva;
+		SELECT @boleto = MAX(numero_boleto) FROM Boletos;
+		SET @boleto = @boleto + 1;
+		INSERT INTO Boletos (numero_boleto, id_avion, id_cliente, id_escala, id_clase, id_asiento) 
+		SELECT @boleto, @avion, @cliente, id_escala, @clase, id_asiento FROM Reservas INNER JOIN Escala ON Reservas.id_vuelo = Escala.id_vuelo;
+		UPDATE Reservas SET estado = 'confirmado' WHERE id_reserva = @reserva;
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION;
+	END CATCH
+END
+
+GO
+
+CREATE OR ALTER PROCEDURE USP_cancelarReserva(@reserva AS INT)
+AS
+BEGIN
+	BEGIN TRANSACTION;
+	BEGIN TRY
+		UPDATE Reservas SET estado = 'cancelado' WHERE id_reserva = @reserva;
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION;
+	END CATCH
 END
