@@ -28,7 +28,7 @@ BEGIN
 				END
 			ELSE
 				BEGIN
-					UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(MINUTE, GETDATE(), @tiempoReserva) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE1
+					UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(MINUTE, @tiempoReserva, GETDATE()) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE1
 				END
 			IF @asientoE2 IS NOT NULL
 				BEGIN
@@ -48,7 +48,7 @@ BEGIN
 						END
 					ELSE
 						BEGIN
-							UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(MINUTE, GETDATE(), @tiempoReserva) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE2
+							UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(MINUTE, @tiempoReserva, GETDATE()) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE2
 						END
 				END
 			IF @asientoE3 IS NOT NULL
@@ -69,7 +69,7 @@ BEGIN
 						END
 					ELSE
 						BEGIN
-							UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(MINUTE, GETDATE(), @tiempoReserva) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE3
+							UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(MINUTE, @tiempoReserva, GETDATE()) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE3
 						END
 				END
 			COMMIT TRANSACTION;
