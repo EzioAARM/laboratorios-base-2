@@ -113,6 +113,7 @@ BEGIN
 	BEGIN TRANSACTION;
 	BEGIN TRY
 		UPDATE Reservas SET estado = 'cancelado' WHERE id_reserva = @reserva;
+		UPDATE Reservas SET estado = 'disponible' WHERE id_reserva = @reserva;
 		COMMIT TRANSACTION;
 	END TRY
 	BEGIN CATCH
