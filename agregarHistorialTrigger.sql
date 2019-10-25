@@ -9,9 +9,10 @@ END
 
 GO
 
-CREATE OR ALTER PROCEDURE USP_reservarAsiento(@vuelo AS INT, @plataforma AS INT, @asientoE1 AS INT, @asientoE2 AS INT = NULL, @asientoE3 AS INT = NULL)
+CREATE OR ALTER PROCEDURE USP_reservarAsiento(@vuelo AS INT, @plataforma AS INT, @tiempoReserva AS INT, @asientoE1 AS INT, @asientoE2 AS INT = NULL, @asientoE3 AS INT = NULL)
 AS
 BEGIN
+	SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
 	BEGIN TRANSACTION;
 	DECLARE @cantidadAviones AS INT
 	SELECT @cantidadAviones = COUNT(id_avion) FROM Escala INNER JOIN Vuelo ON Escala.id_vuelo = Vuelo.id_vuelo;
@@ -38,7 +39,7 @@ BEGIN
 				END
 			ELSE
 				BEGIN
-					UPDATE Reservas SET estado = 'reservado' WHERE id_vuelo = @vuelo AND id_asiento = @asientoE1
+					UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(GETDATE(), @tiempoReserva) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE1
 				END
 			IF @asientoE2 IS NOT NULL
 				BEGIN
@@ -58,7 +59,7 @@ BEGIN
 						END
 					ELSE
 						BEGIN
-							UPDATE Reservas SET estado = 'reservado' WHERE id_vuelo = @vuelo AND id_asiento = @asientoE2
+							UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(GETDATE(), @tiempoReserva) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE2
 						END
 				END
 			IF @asientoE3 IS NOT NULL
@@ -79,7 +80,7 @@ BEGIN
 						END
 					ELSE
 						BEGIN
-							UPDATE Reservas SET estado = 'reservado' WHERE id_vuelo = @vuelo AND id_asiento = @asientoE3
+							UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(GETDATE(), @tiempoReserva) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE3
 						END
 				END
 			COMMIT TRANSACTION;

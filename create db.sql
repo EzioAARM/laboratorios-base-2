@@ -52,7 +52,10 @@ CREATE TABLE Salarios(
 	codigo_trabajador INT NOT NULL,
 	salario DECIMAL NOT NULL,
 	Fecha_pago DATETIME NOT NULL,
-	CONSTRAINT Pk_cTrabajador_Salario PRIMARY KEY (codigo_trabajador, Fecha_pago)
+	CONSTRAINT Pk_cTrabajador_Salario PRIMARY KEY (codigo_trabajador, Fecha_pago),
+	CONSTRAINT fk_salarios_historial FOREIGN KEY (codigo_trabajador) REFERENCES Trabajador(codigo_trabajador)
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION
 )
 
 /*
@@ -240,6 +243,7 @@ CREATE TABLE Reservas(
 	descuento DECIMAL,
 	plataforma INT NOT NULL,
 	id_asiento INT NOT NULL,
+	fecha_vencimiento DATETIME,
 	CONSTRAINT fk_reserva_clase FOREIGN KEY (id_clase) REFERENCES Clase(id_clase)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
