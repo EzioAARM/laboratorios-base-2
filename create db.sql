@@ -232,7 +232,6 @@ CREATE TABLE Plataforma(
 */
 CREATE TABLE Reservas(
 	id_reserva INT PRIMARY KEY IDENTITY(1, 1),
-	num_registro INT NOT NULL,
 	id_vuelo INT NOT NULL,
 	estado varchar(50) not null,
 	id_clase INT NOT NULL,
@@ -241,7 +240,6 @@ CREATE TABLE Reservas(
 	descuento DECIMAL,
 	plataforma INT NOT NULL,
 	id_asiento INT NOT NULL,
-
 	CONSTRAINT fk_reserva_clase FOREIGN KEY (id_clase) REFERENCES Clase(id_clase)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
@@ -260,6 +258,17 @@ CREATE TABLE Reservas(
 )
 
 /*
+	Almacenamiento temporal para las personas que estan en cola para reservar un asiento
+*/
+CREATE TABLE ColaReservas(
+	id_cola INT PRIMARY KEY IDENTITY(1, 1),
+	id_vuelo INT NOT NULL,
+	id_clase INT NOT NULL,
+	id_avion INT NOT NULL,
+	id_asiento INT NOT NULL
+)
+
+/*
 	Tabla para el historial de las reservas, cancelaciones y personas en cola
 */
 CREATE TABLE HistorialReservas(
@@ -272,5 +281,6 @@ CREATE TABLE HistorialReservas(
 	precio DECIMAL,
 	descuento DECIMAL,
 	plataforma INT NOT NULL,
-	id_asiento VARCHAR(10) NOT NULL
+	id_asiento VARCHAR(10) NOT NULL,
+	fecha_transaccion DATETIME DEFAULT GETDATE()
 )
