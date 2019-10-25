@@ -273,7 +273,6 @@ CREATE TABLE ColaReservas(
 */
 CREATE TABLE HistorialReservas(
 	id_reserva INT PRIMARY KEY,
-	num_registro INT NOT NULL,
 	id_vuelo INT NOT NULL,
 	estado varchar(50) not null,
 	id_clase INT NOT NULL,
