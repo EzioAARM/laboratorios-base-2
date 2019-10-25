@@ -16,7 +16,8 @@ CREATE TABLE Persona (
 	Nombres VARCHAR(50), 
 	Apellidos VARCHAR(50), 
 	Nacionalidad VARCHAR(50), 
-	Fecha_Nacimiento DATE
+	Fecha_Nacimiento DATE,
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 )
 
 /*
@@ -26,6 +27,7 @@ CREATE TABLE Cliente (
 	id_cliente INT PRIMARY KEY,
 	id_persona INT NOT NULL, 
 	informacion_Relevante VARCHAR(250),
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 	CONSTRAINT fk_Cliente_Persona FOREIGN KEY (id_persona) REFERENCES Persona(Identificacion)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE
@@ -40,6 +42,7 @@ CREATE TABLE Trabajador (
 	Salario_A decimal NOT NULL,
 	activo BIT,
 	fecha_contratacion DATETIME,
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 	CONSTRAINT fk_Trabajador_Persona FOREIGN KEY (id_persona) REFERENCES Persona(Identificacion)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE
@@ -52,6 +55,7 @@ CREATE TABLE Salarios(
 	codigo_trabajador INT NOT NULL,
 	salario DECIMAL NOT NULL,
 	Fecha_pago DATETIME NOT NULL,
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 	CONSTRAINT Pk_cTrabajador_Salario PRIMARY KEY (codigo_trabajador, Fecha_pago),
 	CONSTRAINT fk_salarios_historial FOREIGN KEY (codigo_trabajador) REFERENCES Trabajador(codigo_trabajador)
 	ON DELETE NO ACTION
@@ -64,7 +68,8 @@ CREATE TABLE Salarios(
 CREATE TABLE Avion (
 	id_avion INT PRIMARY KEY,
 	Cantidad_maxima INT NOT NULL,
-	Tipo_Avion VARCHAR(50)
+	Tipo_Avion VARCHAR(50),
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 )
 
 /*
@@ -72,7 +77,8 @@ CREATE TABLE Avion (
 */
 CREATE TABLE Pais(
 	id_pais INT PRIMARY KEY IDENTITY (1,1),
-	Nombre VARCHAR(100) NOT NULL
+	Nombre VARCHAR(100) NOT NULL,
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 )
 
 /*
@@ -82,6 +88,7 @@ CREATE TABLE Ciudad(
 	id_ciudad INT PRIMARY KEY,
 	id_pais INT NOT NULL,
 	nombre VARCHAR(100),
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 	CONSTRAINT fk_ciudad_pais FOREIGN KEY (id_pais) REFERENCES Pais(id_pais)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE
@@ -94,6 +101,7 @@ CREATE TABLE Aeropuertos (
 	id_aeropuerto INT PRIMARY KEY,
 	id_ciudad INT NOT NULL,
 	nombre VARCHAR(100),
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 	CONSTRAINT fk_Aeropuerto_Ciudad FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE
@@ -106,6 +114,7 @@ CREATE TABLE Vuelo(
 	id_vuelo INT PRIMARY KEY IDENTITY(1, 1),
 	origen INT NOT NULL,
 	destino INT NOT NULL,
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 	CONSTRAINT fk_origen_aeropuerto FOREIGN KEY (origen) REFERENCES Aeropuertos(id_aeropuerto)
 	ON DELETE NO ACTION
 	ON UPDATE NO ACTION,
@@ -126,7 +135,7 @@ CREATE TABLE Escala(
 	id_piloto INT NOT NULL,
 	fecha_inicio DATETIME NOT NULL,
 	fecha_fin DATETIME NOT NULL,
-
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 	CONSTRAINT fk_escala_vuelo FOREIGN KEY (id_vuelo) REFERENCES Vuelo(id_vuelo)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
@@ -150,7 +159,7 @@ CREATE TABLE Escala(
 CREATE TABLE Tripulacion (
 	codigo_trabajador INT NOT NULL,
 	id_vuelo INT NOT NULL,
-
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 	CONSTRAINT fk_tripulacion_trabajador FOREIGN KEY (codigo_trabajador) REFERENCES Trabajador(codigo_trabajador)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
@@ -168,7 +177,7 @@ CREATE TABLE Clase(
 	id_avion INT NOT NULL,
 	tipo VARCHAR(50) NOT NULL,
 	cantidad_pasajeros INT NOT NULL,
-
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 	CONSTRAINT fk_clase_avion FOREIGN KEY(id_avion) REFERENCES Avion(id_avion)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
@@ -184,6 +193,7 @@ CREATE TABLE Asientos(
 	id_avion INT NOT NULL, 
 	id_clase INT NOT NULL,
 	informacion_extra VARCHAR(MAX),
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 	CONSTRAINT fk_asientos_clase FOREIGN KEY (id_clase) REFERENCES Clase(id_clase)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
@@ -202,7 +212,7 @@ CREATE TABLE Boletos(
 	id_escala INT NOT NULL,
 	id_clase INT NOT NULL,
 	id_asiento INT NOT NULL,
-
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 	CONSTRAINT fk_boletos_avion FOREIGN KEY (id_avion) REFERENCES Avion(id_avion)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
@@ -226,7 +236,8 @@ CREATE TABLE Boletos(
 */
 CREATE TABLE Plataforma(
 	id_plataforma INT PRIMARY KEY,
-	nombre VARCHAR(50) NOT NULL
+	nombre VARCHAR(50) NOT NULL,
+	fecha_modificacion DATETIME DEFAULT GETDATE()
 )
 
 /*
@@ -244,6 +255,7 @@ CREATE TABLE Reservas(
 	plataforma INT NOT NULL,
 	id_asiento INT NOT NULL,
 	fecha_vencimiento DATETIME,
+	fecha_modificacion DATETIME DEFAULT GETDATE(),
 	CONSTRAINT fk_reserva_clase FOREIGN KEY (id_clase) REFERENCES Clase(id_clase)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
@@ -269,7 +281,8 @@ CREATE TABLE ColaReservas(
 	id_vuelo INT NOT NULL,
 	id_clase INT NOT NULL,
 	id_avion INT NOT NULL,
-	id_asiento INT NOT NULL
+	id_asiento INT NOT NULL,
+	fecha_modificacion DATETIME DEFAULT GETDATE()
 )
 
 /*
@@ -285,5 +298,6 @@ CREATE TABLE HistorialReservas(
 	descuento DECIMAL,
 	plataforma INT NOT NULL,
 	id_asiento VARCHAR(10) NOT NULL,
-	fecha_transaccion DATETIME DEFAULT GETDATE()
+	fecha_transaccion DATETIME DEFAULT GETDATE(),
+	fecha_modificacion DATETIME DEFAULT GETDATE()
 )
