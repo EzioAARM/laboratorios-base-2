@@ -92,11 +92,13 @@ BEGIN
 		DECLARE @clase AS INT
 		DECLARE @vuelo AS INT
 		DECLARE @boleto AS INT
+		DECLARE @idAsiento AS INT
 		SELECT TOP 1 @avion = id_avion, @clase = id_clase, @vuelo = id_vuelo FROM Reservas WHERE id_reserva = @reserva;
-		SELECT @boleto = MAX(numero_boleto) FROM Boletos;
+		SELECT @boleto = ISNULL(MAX(numero_boleto), 0) FROM Boletos;
+		SELECT @idAsiento = id_asiento FROM Reservas WHERE id_reserva = @reserva;
 		SET @boleto = @boleto + 1;
 		INSERT INTO Boletos (numero_boleto, id_avion, id_cliente, id_escala, id_clase, id_asiento) 
-		SELECT @boleto, @avion, @cliente, id_escala, @clase, id_asiento FROM Reservas INNER JOIN Escala ON Reservas.id_vuelo = Escala.id_vuelo;
+		SELECT @boleto, @avion, @cliente, id_escala, @clase, id_asiento FROM Reservas INNER JOIN Escala ON Reservas.id_vuelo = Escala.id_vuelo WHERE id_asiento = @idAsiento;
 		UPDATE Reservas SET estado = 'confirmado' WHERE id_reserva = @reserva;
 		COMMIT TRANSACTION;
 	END TRY
