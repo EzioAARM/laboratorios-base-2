@@ -28,7 +28,7 @@ BEGIN
 				END
 			ELSE
 				BEGIN
-					UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(MINUTE, @tiempoReserva, GETDATE()) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE1
+					UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(MI, @tiempoReserva, GETDATE()) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE1
 				END
 			IF @asientoE2 IS NOT NULL
 				BEGIN
@@ -48,7 +48,7 @@ BEGIN
 						END
 					ELSE
 						BEGIN
-							UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(MINUTE, @tiempoReserva, GETDATE()) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE2
+							UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(MI, @tiempoReserva,  GETDATE()) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE2
 						END
 				END
 			IF @asientoE3 IS NOT NULL
@@ -69,7 +69,7 @@ BEGIN
 						END
 					ELSE
 						BEGIN
-							UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(MINUTE, @tiempoReserva, GETDATE()) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE3
+							UPDATE Reservas SET estado = 'reservado', fecha_vencimiento = DATEADD(MI, @tiempoReserva, GETDATE()) WHERE id_vuelo = @vuelo AND id_asiento = @asientoE3
 						END
 				END
 			COMMIT TRANSACTION;
@@ -112,27 +112,8 @@ AS
 BEGIN
 	BEGIN TRANSACTION;
 	BEGIN TRY
-		DECLARE @fechaActual AS DATETIME
-		DECLARE @fechaVence AS DATETIME
-		SELECT @fechaActual = GETDATE(), @fechaVence = fecha_vencimiento FROM Reservas WHERE id_reserva = @reserva;
-		IF (@fechaActual >= @fechaVence)
-		BEGIN
-			UPDATE Reservas SET estado = 'cancelado' WHERE id_reserva = @reserva;
-			UPDATE Reservas SET estado = 'disponible' WHERE id_reserva = @reserva;
-			DECLARE @vueloReserva AS INT
-			DECLARE @asientoReserva AS INT
-			SELECT @vueloReserva = id_vuelo, @asientoReserva = id_asiento FROM Reservas WHERE id_reserva = @reserva
-			DECLARE @personasCola AS INT
-			SELECT @personasCola = COUNT(1) FROM ColaReservas WHERE id_vuelo = @vueloReserva AND id_asiento = @asientoReserva
-			IF @personasCola > 0 
-			BEGIN
-				DECLARE @personaCola AS INTEGER
-				SELECT TOP 1 @personaCola = id_cola FROM ColaReservas WHERE id_vuelo = @vueloReserva AND id_asiento = @asientoReserva
-				ORDER BY fecha_modificacion ASC
-				UPDATE Reservas SET estado = 'reservado' WHERE id_vuelo = @vueloReserva AND id_asiento = @asientoReserva
-				DELETE FROM ColaReservas WHERE id_cola = @personaCola
-			END
-		END
+		UPDATE Reservas SET estado = 'cancelado' WHERE id_reserva = @reserva;
+		UPDATE Reservas SET estado = 'disponible' WHERE id_reserva = @reserva;
 		COMMIT TRANSACTION;
 	END TRY
 	BEGIN CATCH

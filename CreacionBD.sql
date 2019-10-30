@@ -290,6 +290,7 @@ CREATE TABLE ColaReservas(
 	Tabla para el historial de las reservas, cancelaciones y personas en cola
 */
 CREATE TABLE HistorialReservas(
+	id_historial INT IDENTITY(1, 1) PRIMARY KEY,
 	id_reserva INT,
 	id_vuelo INT NOT NULL,
 	estado varchar(50) not null,
@@ -300,8 +301,7 @@ CREATE TABLE HistorialReservas(
 	plataforma INT NOT NULL,
 	id_asiento VARCHAR(10) NOT NULL,
 	fecha_transaccion DATETIME DEFAULT GETDATE(),
-	fecha_modificacion DATETIME DEFAULT GETDATE(),
-	CONSTRAINT pk_historialReservas PRIMARY KEY (id_reserva, fecha_modificacion)
+	fecha_modificacion DATETIME DEFAULT GETDATE()
 )
 /*
 	Creacion de triggers
@@ -513,4 +513,26 @@ AS
 BEGIN
 	UPDATE HistorialReservas SET fecha_modificacion = GETDATE() 
 	FROM HistorialReservas INNER JOIN inserted i ON HistorialReservas.id_reserva = i.id_reserva;
+END
+
+GO
+
+CREATE OR ALTER TRIGGER verificarEscalas
+ON Escala
+AFTER INSERT
+AS
+BEGIN
+	DECLARE @insertado AS INT
+	DECLARE @vuelo AS INT
+	SELECT @insertado = id_escala, @vuelo = id_vuelo FROM inserted
+	DECLARE @cantidadRegistros AS INT
+	SELECT @cantidadRegistros = COUNT(id_escala) FROM Escala WHERE id_vuelo = @vuelo
+	IF @cantidadRegistros > 3
+	BEGIN
+		ROLLBACK TRANSACTION;
+	END
+	ELSE 
+	BEGIN
+		COMMIT TRANSACTION;
+	END
 END
