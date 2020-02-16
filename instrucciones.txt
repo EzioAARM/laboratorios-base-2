@@ -1,0 +1,1 @@
+1. En AdventureWorks2017 un usuario AsistenteRH en base a un login del mismo nombre
